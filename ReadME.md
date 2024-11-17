@@ -3,5 +3,5 @@
 ## this may or may not become a game website
 ## this website kinda reminds me of linux mint
 ## H5
-###### this website is maintained by the creator not some random underpaid person
+## this website is maintained by the creator not some random underpaid person
 
