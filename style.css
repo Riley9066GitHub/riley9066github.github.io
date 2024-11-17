@@ -37,3 +37,10 @@ canvas {
     font-size: 24px;
     color: white;
 }
+#timer {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 24px;
+    color: white;
+}
