@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Endless Road Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #333;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const car = {
+            x: canvas.width / 2 - 25,
+            y: canvas.height - 150,
+            width: 50,
+            height: 100,
+            color: 'red',
+            moveLeft: false,
+            moveRight: false
+        };
+
+        const road = {
+            speed: 4,
+            lines: []
+        };
+
+        function createRoadLines() {
+            for (let i = 0; i < 10; i++) {
+                road.lines.push({
+                    x: canvas.width / 2 - 5,
+                    y: i * 150,
+                    width: 10,
+                    height: 50
+                });
+            }
+        }
+
+        function drawRoadLines() {
+            ctx.fillStyle = '#FFF';
+            for (let line of road.lines) {
+                ctx.fillRect(line.x, line.y, line.width, line.height);
+                line.y += road.speed;
+                if (line.y > canvas.height) line.y = -150;
+            }
+        }
+
+        function drawCar() {
+            ctx.fillStyle = car.color;
+            ctx.fillRect(car.x, car.y, car.width, car.height);
+        }
+
+        function updateCarPosition() {
+            if (car.moveLeft && car.x > 0) car.x -= 5;
+            if (car.moveRight && car.x < canvas.width - car.width) car.x += 5;
+        }
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawRoadLines();
+            updateCarPosition();
+            drawCar();
+            requestAnimationFrame(gameLoop);
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') car.moveLeft = true;
+            if (e.key === 'ArrowRight') car.moveRight = true;
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (e.key === 'ArrowLeft') car.moveLeft = false;
+            if (e.key === 'ArrowRight') car.moveRight = false;
+        });
+
+        createRoadLines();
+        gameLoop();
+    </script>
+</body>
+</html>
