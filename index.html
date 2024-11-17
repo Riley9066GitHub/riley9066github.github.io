@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buttons and Car Game</title>
+    <title>Games</title>
     <style>
         body {
             display: flex;
@@ -38,33 +38,50 @@
         #carGameButton:hover {
             background-color: #218838;
         }
+        #gunGameButton {
+            background-color: #FFC107;
+        }
+        #gunGameButton:hover {
+            background-color: #E0A800;
+        }
         canvas {
             display: block;
             margin: auto;
             background: #333;
+        }
+        #score {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            color: white;
+            display: none;
         }
     </style>
 </head>
 <body>
     <div class="button-container">
         <button>Test</button>
-        <button>Test</button>
+        <button id="gunGameButton">GunGame</button>
         <button>Test</button>
         <button id="carGameButton">CarGame</button>
     </div>
 
+    <div id="score">Score: 0</div>
     <canvas id="gameCanvas" style="display: none;"></canvas>
 
     <script>
         const carGameButton = document.getElementById('carGameButton');
+        const gunGameButton = document.getElementById('gunGameButton');
         const canvas = document.getElementById('gameCanvas');
+        const scoreDisplay = document.getElementById('score');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        let car, obstacles, isGameRunning;
+        let car, obstacles, isGameRunning, targets, bullets, score;
 
-        function initGame() {
+        function initCarGame() {
             car = { x: canvas.width / 2 - 25, y: canvas.height - 120, width: 50, height: 100, color: 'red' };
             obstacles = [];
             isGameRunning = true;
@@ -107,24 +124,91 @@
             }
         }
 
-        function gameLoop() {
+        function carGameLoop() {
             if (!isGameRunning) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawCar();
             drawObstacles();
             detectCollisions();
-            requestAnimationFrame(gameLoop);
+            requestAnimationFrame(carGameLoop);
+        }
+
+        function initGunGame() {
+            targets = [];
+            bullets = [];
+            score = 0;
+            isGameRunning = true;
+            scoreDisplay.style.display = 'block';
+            scoreDisplay.textContent = `Score: ${score}`;
+
+            for (let i = 0; i < 5; i++) {
+                targets.push({
+                    x: Math.random() * (canvas.width - 50),
+                    y: Math.random() * (canvas.height - 300),
+                    width: 50,
+                    height: 50,
+                    hit: false
+                });
+            }
+        }
+
+        function drawTargets() {
+            ctx.fillStyle = 'green';
+            for (let target of targets) {
+                if (!target.hit) {
+                    ctx.fillRect(target.x, target.y, target.width, target.height);
+                }
+            }
+        }
+
+        function drawBullets() {
+            ctx.fillStyle = 'yellow';
+            for (let bullet of bullets) {
+                ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+                bullet.y -= 8;
+
+                for (let target of targets) {
+                    if (
+                        bullet.x < target.x + target.width &&
+                        bullet.x + bullet.width > target.x &&
+                        bullet.y < target.y + target.height &&
+                        bullet.y + bullet.height > target.y
+                    ) {
+                        target.hit = true;
+                        bullets.splice(bullets.indexOf(bullet), 1);
+                        score++;
+                        scoreDisplay.textContent = `Score: ${score}`;
+                    }
+                }
+            }
+        }
+
+        function gunGameLoop() {
+            if (!isGameRunning) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawTargets();
+            drawBullets();
+            requestAnimationFrame(gunGameLoop);
         }
 
         window.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft' && car.x > 0) car.x -= 10;
-            if (e.key === 'ArrowRight' && car.x < canvas.width - car.width) car.x += 10;
+            if (isGameRunning && e.key === ' ') {
+                bullets.push({ x: canvas.width / 2 - 5, y: canvas.height - 50, width: 10, height: 20 });
+            }
+        });
+
+        gunGameButton.addEventListener('click', () => {
+            canvas.style.display = 'block';
+            scoreDisplay.style.display = 'block';
+            initGunGame();
+            gunGameLoop();
         });
 
         carGameButton.addEventListener('click', () => {
             canvas.style.display = 'block';
-            initGame();
-            gameLoop();
+            scoreDisplay.style.display = 'none';
+            initCarGame();
+            carGameLoop();
         });
     </script>
 </body>
