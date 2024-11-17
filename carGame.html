@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarGame</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let car = { x: canvas.width / 2 - 25, y: canvas.height - 120, width: 50, height: 100, color: 'red' };
+        let obstacles = [];
+        let isGameRunning = true;
+
+        for (let i = 0; i < 5; i++) {
+            obstacles.push({ x: Math.random() * (canvas.width - 50), y: -200 * i, width: 50, height: 100 });
+        }
+
+        function drawCar() {
+            ctx.fillStyle = car.color;
+            ctx.fillRect(car.x, car.y, car.width, car.height);
+        }
+
+        function drawObstacles() {
+            ctx.fillStyle = 'blue';
+            for (let obstacle of obstacles) {
+                ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+                obstacle.y += 4;
+                if (obstacle.y > canvas.height) {
+                    obstacle.y = -100;
+                    obstacle.x = Math.random() * (canvas.width - 50);
+                }
+            }
+        }
+
+        function detectCollisions() {
+            for (let obstacle of obstacles) {
+                if (
+                    car.x < obstacle.x + obstacle.width &&
+                    car.x + car.width > obstacle.x &&
+                    car.y < obstacle.y + obstacle.height &&
+                    car.y + car.height > obstacle.y
+                ) {
+                    isGameRunning = false;
+                    alert('Game Over!');
+                    location.href = 'index.html';
+                }
+            }
+        }
+
+        function carGameLoop() {
+            if (!isGameRunning) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawCar();
+            drawObstacles();
+            detectCollisions();
+            requestAnimationFrame(carGameLoop);
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (!isGameRunning) return;
+            if (e.key === 'ArrowLeft') car.x -= 10;
+            if (e.key === 'ArrowRight') car.x += 10;
+            car.x = Math.max(0, Math.min(car.x, canvas.width - car.width));
+        });
+
+        carGameLoop();
+    </script>
+</body>
+</html>
