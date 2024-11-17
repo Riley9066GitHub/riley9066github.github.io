@@ -19,8 +19,9 @@
         let targets = [];
         let score = 0;
 
-        // Load sound effect
+        // Load sound effect from local assets folder
         const soundEffect = new Audio('assets/bombplanted.mp3');
+
         function spawnTarget() {
             targets.push({
                 x: Math.random() * (canvas.width - 50),
