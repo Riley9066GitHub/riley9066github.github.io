@@ -1,6 +1,6 @@
 # welcome to this stupid thing
 ## one more thing i am allergic to capital letters
-### H3
+### this may or may not become a game website
 #### H4
 ##### H5
 ###### H6
