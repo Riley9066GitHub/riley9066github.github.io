@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GunGame</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="score">Score: 0</div>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const scoreDisplay = document.getElementById('score');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let targets = [];
+        let score = 0;
+
+        function spawnTarget() {
+            targets.push({
+                x: Math.random() * (canvas.width - 50),
+                y: Math.random() * (canvas.height - 50),
+                width: 50,
+                height: 50
+            });
+        }
+
+        function drawTargets() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'green';
+            for (let target of targets) {
+                ctx.fillRect(target.x, target.y, target.width, target.height);
+            }
+        }
+
+        function handleMouseClick(event) {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+
+            for (let i = targets.length - 1; i >= 0; i--) {
+                const target = targets[i];
+                if (
+                    mouseX > target.x &&
+                    mouseX < target.x + target.width &&
+                    mouseY > target.y &&
+                    mouseY < target.y + target.height
+                ) {
+                    targets.splice(i, 1);
+                    score++;
+                    scoreDisplay.textContent = `Score: ${score}`;
+                    spawnTarget();
+                }
+            }
+        }
+
+        for (let i = 0; i < 5; i++) {
+            spawnTarget();
+        }
+
+        canvas.addEventListener('click', handleMouseClick);
+
+        function gunGameLoop() {
+            drawTargets();
+            requestAnimationFrame(gunGameLoop);
+        }
+
+        gunGameLoop();
+    </script>
+</body>
+</html>
