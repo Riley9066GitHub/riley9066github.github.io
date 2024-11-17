@@ -7,9 +7,11 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div id="timer">Time: 0s</div>
     <canvas id="gameCanvas"></canvas>
     <script>
         const canvas = document.getElementById('gameCanvas');
+        const timerDisplay = document.getElementById('timer');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -17,7 +19,9 @@
         let car = { x: canvas.width / 2 - 25, y: canvas.height - 120, width: 50, height: 100, color: 'red' };
         let obstacles = [];
         let isGameRunning = true;
+        let startTime = Date.now(); // Initialize the start time
 
+        // Create initial obstacles
         for (let i = 0; i < 5; i++) {
             obstacles.push({ x: Math.random() * (canvas.width - 50), y: -200 * i, width: 50, height: 100 });
         }
@@ -48,10 +52,15 @@
                     car.y + car.height > obstacle.y
                 ) {
                     isGameRunning = false;
-                    alert('Game Over!');
+                    alert('Game Over! You lasted for ' + (Math.floor((Date.now() - startTime) / 1000)) + ' seconds!');
                     location.href = 'index.html';
                 }
             }
+        }
+
+        function updateTimer() {
+            const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+            timerDisplay.textContent = `Time: ${elapsedTime}s`;
         }
 
         function carGameLoop() {
@@ -60,6 +69,7 @@
             drawCar();
             drawObstacles();
             detectCollisions();
+            updateTimer(); // Update the timer
             requestAnimationFrame(carGameLoop);
         }
 
