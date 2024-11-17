@@ -19,34 +19,34 @@
         let startTime;
         let timeout;
 
-        // Function to start the reaction test
+        // Start the test
         function startTest() {
             result.textContent = '';
             box.style.backgroundColor = 'red';
             box.textContent = 'Wait...';
             box.removeEventListener('click', handleClick);
 
-            // Set a random delay before the box turns green
+            // Random delay before turning green
             const delay = Math.random() * 3000 + 2000; // 2-5 seconds
             timeout = setTimeout(() => {
                 box.style.backgroundColor = 'green';
                 box.textContent = 'Click!';
-                startTime = Date.now();
+                startTime = performance.now(); // Record the start time
                 box.addEventListener('click', handleClick);
             }, delay);
         }
 
-        // Function to handle the click event
+        // Handle the click
         function handleClick() {
-            const reactionTime = Date.now() - startTime;
-            result.textContent = `Your reaction time: ${reactionTime} ms`;
+            const reactionTime = Math.round(performance.now() - startTime); // Calculate reaction time
+            result.textContent = `Your reaction time: ${reactionTime} milliseconds`;
             box.removeEventListener('click', handleClick);
             box.textContent = 'Play Again';
             box.style.backgroundColor = '#007bff';
             box.addEventListener('click', startTest);
         }
 
-        // Initialize the test
+        // Initialize
         box.addEventListener('click', startTest);
         startTest();
     </script>
