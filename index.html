@@ -81,6 +81,7 @@
 
         let car, obstacles, isGameRunning, targets, score;
 
+        // Car Game Initialization
         function initCarGame() {
             car = { x: canvas.width / 2 - 25, y: canvas.height - 120, width: 50, height: 100, color: 'red' };
             obstacles = [];
@@ -91,12 +92,49 @@
             }
         }
 
+        function drawCar() {
+            ctx.fillStyle = car.color;
+            ctx.fillRect(car.x, car.y, car.width, car.height);
+        }
+
+        function drawObstacles() {
+            ctx.fillStyle = 'blue';
+            for (let obstacle of obstacles) {
+                ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+                obstacle.y += 4;
+                if (obstacle.y > canvas.height) {
+                    obstacle.y = -100;
+                    obstacle.x = Math.random() * (canvas.width - 50);
+                }
+            }
+        }
+
+        function detectCollisions() {
+            for (let obstacle of obstacles) {
+                if (
+                    car.x < obstacle.x + obstacle.width &&
+                    car.x + car.width > obstacle.x &&
+                    car.y < obstacle.y + obstacle.height &&
+                    car.y + car.height > obstacle.y
+                ) {
+                    isGameRunning = false;
+                    alert('Game Over!');
+                    canvas.style.display = 'none';
+                    break;
+                }
+            }
+        }
+
         function carGameLoop() {
             if (!isGameRunning) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawCar();
+            drawObstacles();
+            detectCollisions();
             requestAnimationFrame(carGameLoop);
         }
 
+        // Gun Game Initialization
         function initGunGame() {
             targets = [];
             score = 0;
@@ -106,23 +144,23 @@
 
             // Spawn initial targets
             for (let i = 0; i < 5; i++) {
-                spawnTarget('orange');
+                spawnTarget();
             }
         }
 
-        function spawnTarget(color) {
+        function spawnTarget() {
             targets.push({
                 x: Math.random() * (canvas.width - 50),
                 y: Math.random() * (canvas.height - 50),
                 width: 50,
-                height: 50,
-                color: color
+                height: 50
             });
         }
 
         function drawTargets() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'green';
             for (let target of targets) {
-                ctx.fillStyle = target.color;
                 ctx.fillRect(target.x, target.y, target.width, target.height);
             }
         }
@@ -140,27 +178,21 @@
                     mouseY > target.y &&
                     mouseY < target.y + target.height
                 ) {
-                    if (target.color === 'orange') {
-                        target.color = 'green'; // Turn orange target to green
-                        spawnTarget('orange'); // Add new orange target
-                    } else if (target.color === 'green') {
-                        targets.splice(i, 1); // Remove green target
-                        score++;
-                        scoreDisplay.textContent = `Score: ${score}`;
-                        spawnTarget('orange'); // Add new orange target
-                    }
-                    break;
+                    targets.splice(i, 1); // Remove the clicked target
+                    score++;
+                    scoreDisplay.textContent = `Score: ${score}`;
+                    spawnTarget(); // Add a new target
                 }
             }
         }
 
         function gunGameLoop() {
             if (!isGameRunning) return;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawTargets();
             requestAnimationFrame(gunGameLoop);
         }
 
+        // Event Listeners
         gunGameButton.addEventListener('click', () => {
             canvas.style.display = 'block';
             scoreDisplay.style.display = 'block';
@@ -174,6 +206,13 @@
             scoreDisplay.style.display = 'none';
             initCarGame();
             carGameLoop();
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (!isGameRunning) return;
+            if (e.key === 'ArrowLeft') car.x -= 10;
+            if (e.key === 'ArrowRight') car.x += 10;
+            car.x = Math.max(0, Math.min(car.x, canvas.width - car.width));
         });
     </script>
 </body>
