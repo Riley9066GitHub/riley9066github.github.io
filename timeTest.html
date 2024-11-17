@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Test</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="container">
+        <h1>Reaction Time Test</h1>
+        <p>Click the box as quickly as possible when it turns green!</p>
+        <div id="box"></div>
+        <p id="result"></p>
+    </div>
+    <script>
+        const box = document.getElementById('box');
+        const result = document.getElementById('result');
+        let startTime;
+        let timeout;
+
+        // Function to start the reaction test
+        function startTest() {
+            result.textContent = '';
+            box.style.backgroundColor = 'red';
+            box.textContent = 'Wait...';
+            box.removeEventListener('click', handleClick);
+
+            // Set a random delay before the box turns green
+            const delay = Math.random() * 3000 + 2000; // 2-5 seconds
+            timeout = setTimeout(() => {
+                box.style.backgroundColor = 'green';
+                box.textContent = 'Click!';
+                startTime = Date.now();
+                box.addEventListener('click', handleClick);
+            }, delay);
+        }
+
+        // Function to handle the click event
+        function handleClick() {
+            const reactionTime = Date.now() - startTime;
+            result.textContent = `Your reaction time: ${reactionTime} ms`;
+            box.removeEventListener('click', handleClick);
+            box.textContent = 'Play Again';
+            box.style.backgroundColor = '#007bff';
+            box.addEventListener('click', startTest);
+        }
+
+        // Initialize the test
+        box.addEventListener('click', startTest);
+        startTest();
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #282c34;
+            color: white;
+            margin: 0;
+            text-align: center;
+        }
+
+        #container {
+            max-width: 400px;
+            background: #444;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        #box {
+            width: 150px;
+            height: 150px;
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: red;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        #result {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+    </style>
+</body>
+</html>
