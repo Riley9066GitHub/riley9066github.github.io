@@ -19,6 +19,9 @@
         let targets = [];
         let score = 0;
 
+        // Load sound effect
+        const soundEffect = new Audio('https://www.myinstants.com/media/sounds/bombplanted.mp3');
+
         function spawnTarget() {
             targets.push({
                 x: Math.random() * (canvas.width - 50),
@@ -49,14 +52,16 @@
                     mouseY > target.y &&
                     mouseY < target.y + target.height
                 ) {
-                    targets.splice(i, 1);
+                    targets.splice(i, 1); // Remove the clicked target
                     score++;
                     scoreDisplay.textContent = `Score: ${score}`;
-                    spawnTarget();
+                    spawnTarget(); // Add a new target
+                    soundEffect.play(); // Play the sound
                 }
             }
         }
 
+        // Spawn initial targets
         for (let i = 0; i < 5; i++) {
             spawnTarget();
         }
@@ -72,3 +77,4 @@
     </script>
 </body>
 </html>
+
